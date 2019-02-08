@@ -27,7 +27,6 @@ public class RelationServiceImpl implements pl.coderslab.familytree.service.Rela
     public List<Relation> joinInRelation(FamilyMember primaryPerson, FamilyMember relatedPerson, String kindOfRelation) throws InvalidFamilyRelation {
 
         // == dodajemy pierwszą relację wskazaną w formularzu ==
-        System.out.println("jestem w metodzie łączenia");
         List<Relation> relationsOfPrimaryPerson = new ArrayList<>();
         Relation firstRelation = new Relation(primaryPerson, relatedPerson, kindOfRelation);
         relationsOfPrimaryPerson.add(firstRelation);
@@ -83,34 +82,41 @@ public class RelationServiceImpl implements pl.coderslab.familytree.service.Rela
                 }
             }
         }
+        primaryPerson.setRelations(relationsOfPrimaryPerson);
         return relationsOfPrimaryPerson;
     }
 
     @Override
     public void removeFromRelations(FamilyMember personToDelete) {
         System.out.println("jestem w metodzie usuwania:" + personToDelete.getNameDetails().getFirstName());
+
         List<Relation> reltionsOfDeletingPerson = personToDelete.getRelations();
+        System.out.println("wielkosc listy relacji osoby do usuniecia " + reltionsOfDeletingPerson.size());
 
         if (reltionsOfDeletingPerson.size() > 0) {
             for (Relation reltionOfDeletingPerson: reltionsOfDeletingPerson
              ){
-                System.out.println("sprawdzam relacje osoby do usunięcia: " + reltionOfDeletingPerson.getRelatedPerson().getNameDetails().getFirstName() + reltionOfDeletingPerson.getRelatedPerson().getNameDetails().getLastName());
-                List<Relation> relationsOfRelatedPerson = reltionOfDeletingPerson.getRelatedPerson().getRelations();
-                for (Relation relationOfRelatedPerson: relationsOfRelatedPerson
-                     ) {
-                    System.out.println("sprawdzam relacje krewnego: " + relationOfRelatedPerson.getRelatedPerson().getNameDetails().getFirstName() + relationOfRelatedPerson.getRelatedPerson().getNameDetails().getLastName());
-                    if (relationOfRelatedPerson.getRelatedPerson().equals(personToDelete)){
-                        relationsOfRelatedPerson.remove(relationOfRelatedPerson);
-                        System.out.println("relacja została usunięta");
-
-                        break;
+                FamilyMember relatedPersonToCheck = reltionOfDeletingPerson.getRelatedPerson();
+                List<Relation> relationsOfRelatedPerson = relatedPersonToCheck.getRelations();
+                if (relationsOfRelatedPerson.size() > 0) {
+                    List<Relation> relationsToRemove = new ArrayList<>();
+                    for (Relation relationOfRelatedPerson : relationsOfRelatedPerson
+                    ) {
+                        if (relationOfRelatedPerson.getRelatedPerson().equals(personToDelete)) {
+                            relationsToRemove.add(relationOfRelatedPerson);
+                        }
                     }
-                    reltionOfDeletingPerson.getRelatedPerson().setRelations(relationsOfRelatedPerson);
-                    System.out.println("ponownie sprawdzam relacje krewnego: " + relationOfRelatedPerson.getRelatedPerson().getNameDetails().getFirstName() + relationOfRelatedPerson.getRelatedPerson().getNameDetails().getLastName() + " wielkość listy: " + relationsOfRelatedPerson.size());
+                    for (Relation relationToRemove : relationsToRemove
+                    ) {
+                        relationsOfRelatedPerson.remove(relationToRemove);
+                        System.out.println("relacja została usunięta");
+                    }
                 }
-
             }
         }
+        System.out.println("wielkosc listy relacji usuwanej osoby " + reltionsOfDeletingPerson.size());
+        reltionsOfDeletingPerson.clear();
+        System.out.println("wielkosc listy relacji usuwanej osoby po clear: " + reltionsOfDeletingPerson.size());
 
     }
 }

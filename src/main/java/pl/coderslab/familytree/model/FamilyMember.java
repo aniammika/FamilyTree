@@ -1,5 +1,6 @@
 package pl.coderslab.familytree.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import pl.coderslab.familytree.model.FamilyMemberDetails.*;
@@ -21,11 +22,10 @@ public class FamilyMember {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
     @OneToOne(cascade= CascadeType.ALL)
     private NameDetails nameDetails;
 
-    @ManyToOne(cascade=CascadeType.ALL)
+    @Enumerated(value = EnumType.STRING)
     private Sex sex;
 
     @OneToOne(cascade = {CascadeType.ALL})
@@ -38,14 +38,6 @@ public class FamilyMember {
             inverseJoinColumns = { @JoinColumn(name = "actual_home_id") }
     )
     private Home actualHome;
-
-/*    @ManyToMany(cascade = { CascadeType.ALL })
-    @JoinTable(
-            name = "familyMember_formerHome",
-            joinColumns = { @JoinColumn(name = "family_member_id") },
-            inverseJoinColumns = { @JoinColumn(name = "former_home_id") }
-    )
-    private List<Home> formerHomes = new ArrayList<>();*/
 
     @Size(max = 2000)
     private String biographicalNote;
@@ -63,9 +55,9 @@ public class FamilyMember {
     @OneToOne(cascade= CascadeType.ALL)
     private DeathDetails deathDetails;
 
-
-    @OneToMany(targetEntity = Image.class, mappedBy = "familyMember", fetch = FetchType.LAZY)
-    private Set<Image> images = new HashSet<>();
+    @Lob
+    @Column(name = "images", columnDefinition="LONGBLOB")
+    private Byte[]image;
 
     @CreationTimestamp
     private LocalDateTime createdTime;
@@ -75,6 +67,16 @@ public class FamilyMember {
 
     public FamilyMember() {
 
+    }
+
+    public void setNameDetails(NameDetails nameDetails) {
+        this.nameDetails = nameDetails;
+        nameDetails.setFamilyMember(this);
+    }
+
+    public void setBirthDetails(BirthDetails birthDetails) {
+        this.birthDetails = birthDetails;
+        birthDetails.setFamilyMember(this);
     }
 
 }

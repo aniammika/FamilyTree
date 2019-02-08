@@ -16,26 +16,25 @@ public class Home {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull
     private String name;
 
-    @NotNull
     private String address;
 
-    @NotNull
     private String town;
 
     private String country;
 
     @ManyToMany(mappedBy = "actualHome")
-    private List<FamilyMember> actualFamilyMemberEntities = new ArrayList<>();
+    private List<FamilyMember> actualFamilyMembers = new ArrayList<>();
 
-/*    @ManyToMany(mappedBy = "formerHomes")
-    private List<FamilyMember> formerFamilyMemberEntities = new ArrayList<>();*/
-
-    @OneToMany(mappedBy = "home")
-    private List<Image> images = new ArrayList<>();
+    @Lob
+    @Column(name = "images", columnDefinition = "BLOB")
+    private Byte[] image;
 
     public Home() {
+    }
+
+    public void setName(String address, String town, String country) {
+        this.name = address + ", " + town + ", " + country;
     }
 }
